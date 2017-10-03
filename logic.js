@@ -1,3 +1,7 @@
+$(document).ready(function() {
+
+
+
 var config = {
     apiKey: "AIzaSyAkDXbM85TBkjTI-tihGw5zz4-7UEJa0xs",
     authDomain: "train-schedule12.firebaseapp.com",
@@ -26,7 +30,7 @@ var diffTime = '';
 var tRemainder = '';
 var timeRemaining = '';
 var getTrain = '';
-
+var key = '';
 
 // 2. Button for adding trains
 $("#add-train-btn").on("click", function(event) {
@@ -86,9 +90,12 @@ $("#add-train-btn").on("click", function(event) {
 // 3. Create Firebase event for adding train to the database and a row in the html when a user adds an entry
 database.ref().on("child_added", function(childSnapshot) {
 
-    obj = childSnapshot.val();
 
     // Store everything into a variable.
+    key = childSnapshot.key;
+
+    console.log(key);
+
     trainName = childSnapshot.val().trainName;
     TrainDestination = childSnapshot.val().TrainDestination;
     firstTrain = childSnapshot.val().firstTrain;
@@ -105,20 +112,27 @@ database.ref().on("child_added", function(childSnapshot) {
 
 
     // Add each train's data into the table
-    $("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + TrainDestination + "</td><td>" +
-        frequency + "</td><td>" + nextTrainPretty + "</td><td>" + minAway + "</td><td> " + "<input type='submit' value='remove train' class='remove-train btn btn-primary btn-sm'>" + "</td><td>");
+    $("#train-table > tbody").append("<tr id=" + "'" + key + "'" + ">" + "<td>" 
+        + trainName + "</td><td>" 
+        + TrainDestination + "</td><td>" +
+        frequency + "</td><td>" 
+        + nextTrainPretty + "</td><td>" 
+        + minAway + "</td><td> " 
+        + "<input type='submit' value='remove train' class='remove-train btn btn-primary btn-sm'>" + "</td><td>");
+
+
+
+
 });
 
 
+$("body").on("click", ".remove-train", function(){
+     $(this).closest ('tr').remove();
+     getKey = $(this).parent().parent().attr('id');
+     console.log("get key" + getKey);
+     database.ref().child(getKey).remove();
+});
 
 
-    $("body").on("click", ".remove-train", function() {
-        $(this).closest('tr').remove();
-        getTrain = $(this).parent().parent().attr('id');
-        database.childSnapshot.getTrain.remove();
-    });
-
-
-
-
+});
 
